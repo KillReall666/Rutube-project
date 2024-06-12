@@ -56,8 +56,8 @@ func (i *Interrogator) CongratulationsSender(usersEmail string, user model.Emplo
 }
 
 func (i *Interrogator) EmailSender() { //usersEmail string, user model.Employee
-	from := mail.Address{"", "hicobra@mail.ru"} //user.Email
-	to := mail.Address{"", "codewarrior666@mail.ru"}
+	from := mail.Address{"", ""} //user.Email
+	to := mail.Address{"", ""}
 	subj := "Email subject"
 	body := "This is test email! \n Hail to the King!"
 
@@ -76,7 +76,7 @@ func (i *Interrogator) EmailSender() { //usersEmail string, user model.Employee
 
 	host, _, _ := net.SplitHostPort(serverName)
 
-	auth := smtp.PlainAuth("", "hicobra@mail.ru", "Ejhk8Pdy1ypysZWgWVre", host) //Ejhk8Pdy1ypysZWgWVre
+	auth := smtp.PlainAuth("", "hicobra@mail.ru", "", host)
 	tlsconfig := &tls.Config{
 		InsecureSkipVerify: true,
 		ServerName:         host,
