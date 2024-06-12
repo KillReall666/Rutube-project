@@ -2,7 +2,11 @@ package interrogator
 
 import (
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net"
+	"net/mail"
+	"net/smtp"
 	"time"
 
 	"github.com/KillReall666/Rutube-project/internal/logger"
@@ -49,4 +53,73 @@ func (i *Interrogator) BirthDaysFinder() {
 // CongratulationsSender Заглуша имитирующая отправку оповещения на почту.
 func (i *Interrogator) CongratulationsSender(usersEmail string, user model.Employee) {
 	fmt.Printf("Reminder have been sent on %v. Data of the user who celebrates his birthday today. Name: %v, Mail: %v, Phone: %v.", usersEmail, user.UserName, user.Email, user.PhoneNumber)
+}
+
+func (i *Interrogator) EmailSender() { //usersEmail string, user model.Employee
+	from := mail.Address{"", "hicobra@mail.ru"} //user.Email
+	to := mail.Address{"", "codewarrior666@mail.ru"}
+	subj := "Email subject"
+	body := "This is test email! \n Hail to the King!"
+
+	headers := make(map[string]string)
+	headers["From"] = from.String()
+	headers["To"] = to.String()
+	headers["Subject"] = subj
+
+	message := ""
+	for k, v := range headers {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
+	}
+	message += "\r\n" + body
+
+	serverName := "smtp.mail.ru:465"
+
+	host, _, _ := net.SplitHostPort(serverName)
+
+	auth := smtp.PlainAuth("", "hicobra@mail.ru", "Ejhk8Pdy1ypysZWgWVre", host) //Ejhk8Pdy1ypysZWgWVre
+	tlsconfig := &tls.Config{
+		InsecureSkipVerify: true,
+		ServerName:         host,
+	}
+
+	conn, err := tls.Dial("tcp", serverName, tlsconfig)
+	if err != nil {
+		i.log.LogError("err when make tls dial", err)
+	}
+
+	c, err := smtp.NewClient(conn, host)
+	if err != nil {
+		i.log.LogError("err when connect to server", err)
+	}
+
+	if err = c.Auth(auth); err != nil {
+		i.log.LogError("err when authenticate", err)
+	}
+
+	if err = c.Mail(from.Address); err != nil {
+		i.log.LogError("err when set from", err)
+	}
+
+	if err = c.Rcpt(to.Address); err != nil {
+		i.log.LogError("err when set to", err)
+	}
+
+	w, err := c.Data()
+	if err != nil {
+		i.log.LogError("err when set data", err)
+	}
+
+	_, err = w.Write([]byte(message))
+	if err != nil {
+		i.log.LogError("err when write data", err)
+	}
+
+	err = w.Close()
+	if err != nil {
+		i.log.LogError("err when close", err)
+	}
+
+	i.log.LogInfo("Email send!")
+
+	c.Quit()
 }

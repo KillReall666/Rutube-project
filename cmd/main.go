@@ -52,6 +52,8 @@ func main() {
 		interrog.BirthDaysFinder()
 	}()
 
+	interrog.EmailSender()
+
 	r := chi.NewRouter()
 
 	r.Group(func(r chi.Router) {

@@ -15,7 +15,7 @@ type Config struct {
 const (
 	defaultServer       = "localhost:8080"
 	defaultRedisAddress = "localhost:6379"
-	defaultConnStr      = "host= port= user= password= dbname= sslmode=disable"
+	defaultConnStr      = "host=localhost port=5432 user=Mr8 password=Rammstein12! dbname=rutube_db sslmode=disable"
 )
 
 func New() (*Config, error) {
